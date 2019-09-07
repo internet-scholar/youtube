@@ -171,10 +171,15 @@ class Youtube:
                                                                               cache_discovery=False)
                             else:
                                 raise
-                    for item in response.get('items', []):
-                        item['snippet']['publishedAt'] = item['snippet']['publishedAt'].rstrip('Z').replace('T', ' ')
-                        item['retrieved_at'] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-                        json_writer.write("{}\n".format(json.dumps(item)))
+                    if len(response.get('items', [])) == 0:
+                        response['id'] = video_id['video_id']
+                        response['description'] = "Video unavailable. It has probably been removed by the user."
+                        json_writer.write("{}\n".format(json.dumps(response)))
+                    else:
+                        for item in response['items']:
+                            item['snippet']['publishedAt'] = item['snippet']['publishedAt'].rstrip('Z').replace('T', ' ')
+                            item['retrieved_at'] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+                            json_writer.write("{}\n".format(json.dumps(item)))
 
         logging.info("Compress file %s", output_json)
         compressed_file = compress(filename=output_json, delete_original=True)
@@ -273,7 +278,7 @@ def main():
                           s3_admin=config['aws']['s3-admin'],
                           s3_data=config['aws']['s3-data'])
         youtube.collect_video_snippets()
-        youtube.collect_channel_stats()
+        #youtube.collect_channel_stats()
     finally:
         logger.save_to_s3()
         logger.recreate_athena_table()
