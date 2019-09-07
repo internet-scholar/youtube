@@ -226,7 +226,7 @@ class Youtube:
                                     current_key,
                                     self.credentials[current_key]['developer_key']))
                                 current_key = current_key + 1
-                                if current_key >= len(self.credentials['youtube']):
+                                if current_key >= len(self.credentials):
                                     raise
                                 else:
                                     youtube = googleapiclient.discovery.build(serviceName="youtube",
