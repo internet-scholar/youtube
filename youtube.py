@@ -173,6 +173,7 @@ class Youtube:
                                 raise
                     if len(response.get('items', [])) == 0:
                         response['id'] = video_id['video_id']
+                        response['retrieved_at'] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
                         response['description'] = "Video unavailable. It has probably been removed by the user."
                         json_writer.write("{}\n".format(json.dumps(response)))
                     else:
