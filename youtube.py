@@ -276,6 +276,7 @@ def main():
         youtube.collect_channel_stats()
     finally:
         logger.save_to_s3()
+        logger.recreate_athena_table()
 
 
 if __name__ == '__main__':
