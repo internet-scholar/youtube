@@ -132,7 +132,7 @@ class Youtube:
         logging.info("There are %d links to be processed: download them", video_count)
         video_ids_csv = athena.query_athena_and_download(query_string=query, filename="video_ids.csv")
 
-        output_json = Path(Path(__file__).parent, 'tmp', 'youtube_video.json')
+        output_json = Path(Path(__file__).parent, 'tmp', 'youtube_video_snippet.json')
         Path(output_json).parent.mkdir(parents=True, exist_ok=True)
         current_key = 0
         youtube = googleapiclient.discovery.build(serviceName="youtube",
