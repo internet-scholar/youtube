@@ -279,7 +279,7 @@ def main():
                           s3_admin=config['aws']['s3-admin'],
                           s3_data=config['aws']['s3-data'])
         youtube.collect_video_snippets()
-        #youtube.collect_channel_stats()
+        youtube.collect_channel_stats()
     finally:
         logger.save_to_s3()
         logger.recreate_athena_table()
