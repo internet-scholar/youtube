@@ -73,6 +73,8 @@ select distinct
   snippet.channelId as channel_id
 from
   youtube_video_snippet
+where
+  snippet.channelId is not NULL
 order by
   channel_id;
 """
