@@ -8,6 +8,7 @@ import csv
 from pathlib import Path
 import json
 from datetime import datetime
+import time
 
 
 SELECT_YOUTUBE_VIDEOS = """
@@ -119,6 +120,7 @@ class Youtube:
         self.s3_data = s3_data
 
     LOGGING_INTERVAL = 100
+    WAIT_WHEN_SERVICE_UNAVAILABLE = 30
 
     def collect_video_snippets(self):
         logging.info("Start collecting video snippets")
@@ -151,6 +153,7 @@ class Youtube:
                         logging.info("%d out of %d videos processed", num_videos, video_count)
                     num_videos = num_videos + 1
 
+                    service_unavailable = 0
                     no_response = True
                     while no_response:
                         try:
@@ -171,6 +174,13 @@ class Youtube:
                                                                               self.credentials[current_key][
                                                                                   'developer_key'],
                                                                               cache_discovery=False)
+                            elif "503" in str(e):
+                                logging.info("Service unavailable")
+                                service_unavailable = service_unavailable + 1
+                                if service_unavailable <= 10:
+                                    time.sleep(self.WAIT_WHEN_SERVICE_UNAVAILABLE)
+                                else:
+                                    raise
                             else:
                                 raise
                     if len(response.get('items', [])) == 0:
@@ -223,6 +233,7 @@ class Youtube:
                         logging.info("%d out of %d channels processed", num_channels, channel_count)
                     num_channels = num_channels + 1
 
+                    service_unavailable = 0
                     no_response = True
                     while no_response:
                         try:
@@ -243,6 +254,13 @@ class Youtube:
                                                                               self.credentials[current_key][
                                                                                   'developer_key'],
                                                                               cache_discovery=False)
+                            elif "503" in str(e):
+                                logging.info("Service unavailable")
+                                service_unavailable = service_unavailable + 1
+                                if service_unavailable <= 10:
+                                    time.sleep(self.WAIT_WHEN_SERVICE_UNAVAILABLE)
+                                else:
+                                    raise
                             else:
                                 raise
                     for item in response.get('items', []):
